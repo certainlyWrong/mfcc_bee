@@ -3,10 +3,11 @@ import 'mfcc.dart';
 import 'dart:convert';
 import 'functions/loadWavBuffer.dart';
 
-String pathFromFileName(String path) => path.substring(path.lastIndexOf('/'), path.length);
+String pathFromFileName(String path) =>
+    path.substring(path.lastIndexOf('/'), path.length);
 
 void run(String path, String fileName) async {
-  final wave = Directory("/home/adrianords/Downloads/original"),
+  final wave = Directory(path),
       paths = wave.list(recursive: true, followLinks: false);
 
   Map<String, List<double>> mfccResults = {};
@@ -14,20 +15,26 @@ void run(String path, String fileName) async {
   List<FileSystemEntity> allPaths = await paths.toList();
   int size = allPaths.length;
 
-  for (var i = 0; i < size; i++) {
+  for (var i = 0; i < 1100; i++) {
     if (allPaths[i].toString().contains('wav')) {
-        print("${i} - "+pathFromFileName(allPaths[i].toString()));
-        await loadBuffer(allPaths[i].path).then((value) async {
-          if (value != null) {
-            mfccResults.addEntries({pathFromFileName(allPaths[i].toString()): await mfcc(value, verbose: true),}.entries);
-          }
-        });
-      }
+      print("${i} - " + pathFromFileName(allPaths[i].toString()));
+      await loadBuffer(allPaths[i].path).then((value) async {
+        if (value != null) {
+          mfccResults.addEntries({
+            pathFromFileName(allPaths[i].toString()):
+                await mfcc(value, verbose: true),
+          }.entries);
+        }
+      });
+    }
   }
 
-  File("./"+fileName+".json")..createSync()..openWrite()..writeAsStringSync(jsonEncode(mfccResults))..existsSync();
+  File("./" + fileName + ".json")
+    ..createSync()
+    ..openWrite()
+    ..writeAsStringSync(jsonEncode(mfccResults))
+    ..existsSync();
 }
-
 
 double checkDouble(dynamic value) {
   if (value is String) {

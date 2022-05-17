@@ -118,7 +118,6 @@ Future<List<double>> mfcc(
     print("fft and others - ${time?.elapsedMilliseconds}ms");
   }
 
-
   /*
    ! Passo 4
   */
