@@ -1,13 +1,13 @@
 // ignore_for_file: non_constant_identifier_names, unused_import
 
-import 'functions/dctTypeThree.dart';
 import 'functions/framing.dart';
 import 'functions/audioLog.dart';
 import 'functions/normalize.dart';
+import 'functions/filterbank.dart';
+import 'functions/dctTypeThree.dart';
 import 'package:scidart/numdart.dart';
 import 'package:scidart/scidart.dart';
 import 'functions/utils/bufferWav.dart';
-import 'functions/filterbank.dart';
 import 'functions/utils/matrixComplexTranspose.dart';
 
 Future<List<double>> mfcc(
@@ -118,6 +118,14 @@ Future<List<double>> mfcc(
     print("fft and others - ${time?.elapsedMilliseconds}ms");
   }
 
+
+  /*
+   ! Passo 4
+  */
+  if (verbose) {
+    time?.reset();
+    time?.start();
+  }
   List filter_points_and_freqs =
       get_filter_points(freq_min, freq_high, mel_filter_num, fft_size);
 
@@ -145,6 +153,11 @@ Future<List<double>> mfcc(
 
   for (var i = 0; i < cepstral_coefficents.row; i++) {
     MFCCs.add(cepstral_coefficents[i][0]);
+  }
+
+  if (verbose) {
+    time?.stop();
+    print("finish - ${time?.elapsedMilliseconds}ms");
   }
 
   return MFCCs;

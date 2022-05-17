@@ -2,30 +2,32 @@ import 'dart:io';
 import 'mfcc.dart';
 import 'dart:convert';
 import 'functions/loadWavBuffer.dart';
-import 'package:scidart/numdart.dart';
-import 'functions/utils/bufferWav.dart';
 
-Future<List<double>> run() async {
-  final wave = Directory("/home/adriano/Downloads/original"),
+String pathFromFileName(String path) => path.substring(path.lastIndexOf('/'), path.length);
+
+void run(String path, String fileName) async {
+  final wave = Directory("/home/adrianords/Downloads/original"),
       paths = wave.list(recursive: true, followLinks: false);
 
-  List<double> a = [];
+  Map<String, List<double>> mfccResults = {};
 
-  paths.listen(
-    (event) async {
-      if (event.toString().contains('wav')) {
-        print(event.toString());
-        await loadBuffer(event.path).then((value) async {
+  List<FileSystemEntity> allPaths = await paths.toList();
+  int size = allPaths.length;
+
+  for (var i = 0; i < size; i++) {
+    if (allPaths[i].toString().contains('wav')) {
+        print("${i} - "+pathFromFileName(allPaths[i].toString()));
+        await loadBuffer(allPaths[i].path).then((value) async {
           if (value != null) {
-            print(await mfcc(value, verbose: true));
+            mfccResults.addEntries({pathFromFileName(allPaths[i].toString()): await mfcc(value, verbose: true),}.entries);
           }
         });
       }
-    },
-  );
+  }
 
-  return a;
+  File("./"+fileName+".json")..createSync()..openWrite()..writeAsStringSync(jsonEncode(mfccResults))..existsSync();
 }
+
 
 double checkDouble(dynamic value) {
   if (value is String) {
@@ -36,17 +38,17 @@ double checkDouble(dynamic value) {
 }
 
 void main(List<String> args) async {
-  List a = json.decode(File("buffer.json").readAsStringSync())["signal"]["0"];
-  List<double> b = [];
+  // List a = json.decode(File("buffer.json").readAsStringSync())["signal"]["0"];
+  // List<double> b = [];
 
-  for (var i = 0; i < a.length; i++) {
-    b.add(checkDouble(a[i]));
-  }
+  // for (var i = 0; i < a.length; i++) {
+  //   b.add(checkDouble(a[i]));
+  // }
 
-  BufferWav bufferOrigin = BufferWav(
-    22050,
-    Array(b),
-  );
+  // BufferWav bufferOrigin = BufferWav(
+  //   22050,
+  //   Array(b),
+  // );
   // await loadBuffer('/home/adriano/Documentos/mfcc_dart/audio/audio2.wav')
   //     .then((value) async {
   //   if (value != null) {
@@ -54,9 +56,9 @@ void main(List<String> args) async {
   //   }
   // });
 
-  print(await mfcc(bufferOrigin, normalize: true, verbose: true));
+  // print(await mfcc(bufferOrigin, normalize: true, verbose: true));
 
-  // await run();
+  run(args[0], args[1]);
 
   // ArrayComplex a = ArrayComplex.empty();
   // for (var i = 0; i < 16; i++) {
