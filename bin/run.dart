@@ -1,38 +1,40 @@
 import 'dart:io';
 import 'mfcc.dart';
-import 'dart:convert';
+import 'package:csv/csv.dart';
 import 'functions/loadWavBuffer.dart';
 
 String pathFromFileName(String path) =>
-    path.substring(path.lastIndexOf('/'), path.length);
+    path.substring(path.lastIndexOf('/') + 1, path.length);
 
-void run(String path, String fileName) async {
+void run(
+  String path,
+  String fileName,
+  int quant,
+) async {
   final wave = Directory(path),
       paths = wave.list(recursive: true, followLinks: false);
 
-  Map<String, List<double>> mfccResults = {};
+  List<List> mfccResults = [
+    ['nome', ...List<int>.generate(20, (index) => index)]
+  ];
 
-  List<FileSystemEntity> allPaths = await paths.toList();
-  int size = allPaths.length;
+  List<FileSystemEntity> allPaths = (await paths.toList())
+      .where((element) => element.path.contains('wav'))
+      .toList();
 
-  for (var i = 0; i < 1100; i++) {
-    if (allPaths[i].toString().contains('wav')) {
-      print("${i} - " + pathFromFileName(allPaths[i].toString()));
-      await loadBuffer(allPaths[i].path).then((value) async {
-        if (value != null) {
-          mfccResults.addEntries({
-            pathFromFileName(allPaths[i].toString()):
-                await mfcc(value, verbose: true),
-          }.entries);
-        }
-      });
-    }
+  for (var i = 0; i < quant; i++) {
+    print("$i - " + pathFromFileName(allPaths[i].toString()));
+    await loadBuffer(allPaths[i].path).then((value) async {
+      if (value != null) {
+        mfccResults.add(['element$i', ...(await mfcc(value, verbose: true))]);
+      }
+    });
   }
 
-  File("./" + fileName + ".json")
+  File("./" + fileName + ".csv")
     ..createSync()
     ..openWrite()
-    ..writeAsStringSync(jsonEncode(mfccResults))
+    ..writeAsStringSync(ListToCsvConverter().convert(mfccResults))
     ..existsSync();
 }
 
@@ -65,7 +67,14 @@ void main(List<String> args) async {
 
   // print(await mfcc(bufferOrigin, normalize: true, verbose: true));
 
-  run(args[0], args[1]);
+  run(args[0], args[1], int.parse(args[2]));
+
+  // final a = ListToCsvConverter().convert([
+  //   ['aaaa', 'bbbb', 'cccc', 1],
+  //   [1, 2, 3, 4],
+  //   [1, 2, 3, 4],
+  //   [1, 2, 3, 4]
+  // ]);
 
   // ArrayComplex a = ArrayComplex.empty();
   // for (var i = 0; i < 16; i++) {

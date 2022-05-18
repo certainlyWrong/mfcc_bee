@@ -14,10 +14,10 @@ Future<List<double>> mfcc(
   BufferWav buffer, {
   int hop_size = 15,
   int fft_size = 2048,
-  int mel_filter_num = 10,
+  int dctFilterNum = 20,
   bool verbose = false,
-  bool normalize = false,
-  String? status,
+  int mel_filter_num = 10,
+  bool normilize_activate = false,
 }) async {
   /*
    * Timer usado para medir o tempo de execução
@@ -25,7 +25,7 @@ Future<List<double>> mfcc(
   */
   Stopwatch? time = verbose ? Stopwatch() : null;
 
-  if (normalize) {
+  if (normilize_activate) {
     /*
      ! Passo 1
      * Iniciando processo de normalização do buffer.
@@ -50,14 +50,14 @@ Future<List<double>> mfcc(
     time?.start();
   }
 
-  List<Array> audio_framed = await framing(
+  List<Array> audioFramed = await framing(
     buffer.signal,
     fft_size: fft_size,
     hop_size: hop_size,
     sample_rate: buffer.simplesRate,
   );
 
-  double freq_min = 0, freq_high = buffer.simplesRate / 2;
+  double freqMin = 0, freqHigh = buffer.simplesRate / 2;
 
   // TODO testando se realmente é necessario transpor a matriz duas vezes para ter bons resultados
   // Array2d audio_frame_T = matrixTranspose(
@@ -68,10 +68,10 @@ Future<List<double>> mfcc(
   // );
 
   // TODO a função de janelamento está dando valores diferentes, talvez isso não altere o resultado final... Ou talvez será necessario reimplementar
-  Array window_hann = hann(fft_size);
+  Array windowHann = hann(fft_size);
 
-  List<Array> audio_win =
-      Array2d(audio_framed).map((element) => element * window_hann).toList();
+  List<Array> audioWin =
+      Array2d(audioFramed).map((element) => element * windowHann).toList();
 
   if (verbose) {
     time?.stop();
@@ -88,16 +88,14 @@ Future<List<double>> mfcc(
     time?.start();
   }
 
-  int size = audio_win.length, cut = (1 + audio_win[0].length ~/ 2);
-  List<ArrayComplex> audio_fft = [];
+  int size = audioWin.length, cut = (1 + audioWin[0].length ~/ 2);
+  List<ArrayComplex> audioFft = [];
 
   for (var i = 0; i < size; i++) {
-    List<Complex> aux = audio_win
-        .elementAt(i)
-        .map((element) => Complex(real: element))
-        .toList();
+    List<Complex> aux =
+        audioWin.elementAt(i).map((element) => Complex(real: element)).toList();
 
-    audio_fft.add(
+    audioFft.add(
       ArrayComplex(fft(ArrayComplex(aux)).sublist(0, cut)),
     );
   }
@@ -105,12 +103,12 @@ Future<List<double>> mfcc(
   // TODO Teste da necessidade de transpor a matriz
   // audio_fft = matrixComplexTranspose(audio_fft);
 
-  List<Array> audio_power = [];
-  size = audio_fft.length;
+  List<Array> audioPower = [];
+  size = audioFft.length;
 
   for (var i = 0; i < size; i++) {
-    Array aux = arrayComplexAbs(ArrayComplex(audio_fft[i]));
-    audio_power.add(aux * aux);
+    Array aux = arrayComplexAbs(ArrayComplex(audioFft[i]));
+    audioPower.add(aux * aux);
   }
 
   if (verbose) {
@@ -125,33 +123,28 @@ Future<List<double>> mfcc(
     time?.reset();
     time?.start();
   }
-  List filter_points_and_freqs =
-      get_filter_points(freq_min, freq_high, mel_filter_num, fft_size);
+  List filterPointsAndFreqs =
+      get_filter_points(freqMin, freqHigh, mel_filter_num, fft_size);
 
-  List<Array> filters = get_filters(filter_points_and_freqs[0], fft_size);
+  List<Array> filters = get_filters(filterPointsAndFreqs[0], fft_size);
 
-  Array enorm =
-      (Array(filter_points_and_freqs[1].sublist(2, mel_filter_num + 2)) -
-          Array(filter_points_and_freqs[1]).sublist(0, mel_filter_num));
+  Array enorm = (Array(filterPointsAndFreqs[1].sublist(2, mel_filter_num + 2)) -
+      Array(filterPointsAndFreqs[1]).sublist(0, mel_filter_num));
 
   for (var i = 0; i < mel_filter_num; i++) {
     filters[i] = arrayMultiplyToScalar(filters[i], (2 / enorm.elementAt(i)));
   }
 
-  Array2d audio_filtered =
-          matrixDot(Array2d(filters), matrixTranspose(Array2d(audio_power))),
-      result_audio_log = await audioLog(audio_filtered);
-
-  int dctFilterNum = 40;
-
-  Array2d dct_filters = await dctTypeThree(dctFilterNum, mel_filter_num);
-
-  Array2d cepstral_coefficents = matrixDot(dct_filters, result_audio_log);
+  Array2d audioFiltered =
+          matrixDot(Array2d(filters), matrixTranspose(Array2d(audioPower))),
+      resultAudioLog = await audioLog(audioFiltered),
+      dctFilters = await dctTypeThree(dctFilterNum, mel_filter_num),
+      cepstralCoefficents = matrixDot(dctFilters, resultAudioLog);
 
   List<double> MFCCs = [];
 
-  for (var i = 0; i < cepstral_coefficents.row; i++) {
-    MFCCs.add(cepstral_coefficents[i][0]);
+  for (var i = 0; i < cepstralCoefficents.row; i++) {
+    MFCCs.add(cepstralCoefficents[i][0]);
   }
 
   if (verbose) {
