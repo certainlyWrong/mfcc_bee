@@ -27,11 +27,11 @@ Future<List<double>> mfcc(
 
   if (normilize_activate) {
     /*
-     ! Passo 1
-     * Iniciando processo de normalização do buffer.
-     * Esse processo transmite a proporção da frenquencia do audio
-     * para valores entre 1 e -1.
-    */
+	! Passo 1
+	* Iniciando processo de normalização do buffer.
+	* Esse processo transmite a proporção da frenquencia do audio
+	* para valores entre 1 e -1.
+  */
     if (verbose) time?.start();
     buffer.signal = await normilize(buffer.signal);
     if (verbose) {

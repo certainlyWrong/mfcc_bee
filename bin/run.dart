@@ -67,6 +67,13 @@ void main(List<String> args) async {
 
   // print(await mfcc(bufferOrigin, normalize: true, verbose: true));
 
+  // List a = [];
+
+  // a.add('/home/adrianords/Downloads/original/bee1');
+  // a.add('bee');
+  // a.add('550');
+
+  // run(a[0], a[1], int.parse(a[2]));
   run(args[0], args[1], int.parse(args[2]));
 
   // final a = ListToCsvConverter().convert([
