@@ -10,6 +10,7 @@ environment:
 dependencies:
   args: ^2.0.0
   csv: ^5.0.1
+  fftea: ^1.0.1
   scidart: ^0.0.2-dev.9
   shelf: ^1.1.0
   shelf_router: ^1.0.0

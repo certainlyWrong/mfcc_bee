@@ -1,6 +1,6 @@
 // ignore_for_file: file_names
 
-import 'utils/bufferWav.dart';
+import 'utils/buffer_wav.dart';
 import 'package:wav/wav.dart';
 import 'package:scidart/numdart.dart';
 

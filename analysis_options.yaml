@@ -17,8 +17,10 @@ include: package:lints/recommended.yaml
 
 linter:
   rules:
-    - camel_case_types
-    - non_constant_identifier_names
+    - camel_case_types: true
+    - non_constant_identifier_names: true
+    - lowercase_with_underscores: true
+    
     
 # analyzer:
 #   exclude:

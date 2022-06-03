@@ -1,23 +1,25 @@
-// ignore_for_file: non_constant_identifier_names, unused_import
+import 'dart:typed_data';
+
+import 'package:fftea/fftea.dart';
 
 import 'functions/framing.dart';
-import 'functions/audioLog.dart';
+import 'functions/audio_log.dart';
+import 'functions/hann_window.dart';
 import 'functions/normalize.dart';
 import 'functions/filterbank.dart';
-import 'functions/dctTypeThree.dart';
+import 'functions/dct_type_three.dart';
 import 'package:scidart/numdart.dart';
 import 'package:scidart/scidart.dart';
-import 'functions/utils/bufferWav.dart';
-import 'functions/utils/matrixComplexTranspose.dart';
+import 'functions/utils/buffer_wav.dart';
 
 Future<List<double>> mfcc(
   BufferWav buffer, {
-  int hop_size = 15,
-  int fft_size = 2048,
+  int hopSize = 15,
+  int fftSize = 2048,
   int dctFilterNum = 20,
   bool verbose = false,
-  int mel_filter_num = 10,
-  bool normilize_activate = false,
+  int melFilterNum = 10,
+  bool normilizeActivate = false,
 }) async {
   /*
    * Timer usado para medir o tempo de execução
@@ -25,7 +27,7 @@ Future<List<double>> mfcc(
   */
   Stopwatch? time = verbose ? Stopwatch() : null;
 
-  if (normilize_activate) {
+  if (normilizeActivate) {
     /*
 	! Passo 1
 	* Iniciando processo de normalização do buffer.
@@ -52,8 +54,8 @@ Future<List<double>> mfcc(
 
   List<Array> audioFramed = await framing(
     buffer.signal,
-    fft_size: fft_size,
-    hop_size: hop_size,
+    fft_size: fftSize,
+    hop_size: hopSize,
     sample_rate: buffer.simplesRate,
   );
 
@@ -67,8 +69,8 @@ Future<List<double>> mfcc(
   //   ),
   // );
 
-  // TODO a função de janelamento está dando valores diferentes, talvez isso não altere o resultado final... Ou talvez será necessario reimplementar
-  Array windowHann = hann(fft_size);
+  // Array windowHann = hann(fftSize);
+  Array windowHann = hannWindow(fftSize);
 
   List<Array> audioWin =
       Array2d(audioFramed).map((element) => element * windowHann).toList();
@@ -89,7 +91,24 @@ Future<List<double>> mfcc(
   }
 
   int size = audioWin.length, cut = (1 + audioWin[0].length ~/ 2);
+
   List<ArrayComplex> audioFft = [];
+
+  // for (var i = 0; i < size; i++) {
+  //   List<Float64x2> aux =
+  //       audioWin.elementAt(i).map((element) => Float64x2(element, 0)).toList();
+
+  //   FFT(fftSize).inPlaceFft(
+  //     Float64x2List.fromList(aux),
+  //   );
+
+  //   audioFft.add(
+  //     ArrayComplex(aux
+  //         .map((e) => Complex(real: e.x, imaginary: e.y))
+  //         .toList()
+  //         .sublist(0, cut)),
+  //   );
+  // }
 
   for (var i = 0; i < size; i++) {
     List<Complex> aux =
@@ -113,7 +132,7 @@ Future<List<double>> mfcc(
 
   if (verbose) {
     time?.stop();
-    print("fft and others - ${time?.elapsedMilliseconds}ms");
+    print("fft - ${time?.elapsedMilliseconds}ms");
   }
 
   /*
@@ -124,21 +143,21 @@ Future<List<double>> mfcc(
     time?.start();
   }
   List filterPointsAndFreqs =
-      get_filter_points(freqMin, freqHigh, mel_filter_num, fft_size);
+      get_filter_points(freqMin, freqHigh, melFilterNum, fftSize);
 
-  List<Array> filters = get_filters(filterPointsAndFreqs[0], fft_size);
+  List<Array> filters = get_filters(filterPointsAndFreqs[0], fftSize);
 
-  Array enorm = (Array(filterPointsAndFreqs[1].sublist(2, mel_filter_num + 2)) -
-      Array(filterPointsAndFreqs[1]).sublist(0, mel_filter_num));
+  Array enorm = (Array(filterPointsAndFreqs[1].sublist(2, melFilterNum + 2)) -
+      Array(filterPointsAndFreqs[1]).sublist(0, melFilterNum));
 
-  for (var i = 0; i < mel_filter_num; i++) {
+  for (var i = 0; i < melFilterNum; i++) {
     filters[i] = arrayMultiplyToScalar(filters[i], (2 / enorm.elementAt(i)));
   }
 
   Array2d audioFiltered =
           matrixDot(Array2d(filters), matrixTranspose(Array2d(audioPower))),
       resultAudioLog = await audioLog(audioFiltered),
-      dctFilters = await dctTypeThree(dctFilterNum, mel_filter_num),
+      dctFilters = await dctTypeThree(dctFilterNum, melFilterNum),
       cepstralCoefficents = matrixDot(dctFilters, resultAudioLog);
 
   List<double> MFCCs = [];

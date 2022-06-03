@@ -1,6 +1,6 @@
 // ignore_for_file: non_constant_identifier_names
 
-import 'utils/array1dPad.dart';
+import 'utils/array1d_pad.dart';
 import 'package:scidart/numdart.dart';
 
 /// # framing

@@ -1,15 +1,19 @@
 import 'dart:io';
 import 'mfcc.dart';
 import 'package:csv/csv.dart';
-import 'functions/loadWavBuffer.dart';
+import 'functions/load_wav_buffer.dart';
 
 String pathFromFileName(String path) =>
     path.substring(path.lastIndexOf('/') + 1, path.length);
 
 void run(
   String path,
-  String fileName,
   int quant,
+  String fileName,
+  int hopSize,
+  int dctFilterNum,
+  int fftSize,
+  int melFilterNum,
 ) async {
   final wave = Directory(path),
       paths = wave.list(recursive: true, followLinks: false);
@@ -26,7 +30,17 @@ void run(
     print("$i - " + pathFromFileName(allPaths[i].toString()));
     await loadBuffer(allPaths[i].path).then((value) async {
       if (value != null) {
-        mfccResults.add(['element$i', ...(await mfcc(value, verbose: true))]);
+        mfccResults.add([
+          'element$i',
+          ...(await mfcc(
+            value,
+            verbose: true,
+            hopSize: hopSize,
+            fftSize: fftSize,
+            dctFilterNum: dctFilterNum,
+            melFilterNum: melFilterNum,
+          ))
+        ]);
       }
     });
   }
@@ -74,7 +88,15 @@ void main(List<String> args) async {
   // a.add('550');
 
   // run(a[0], a[1], int.parse(a[2]));
-  run(args[0], args[1], int.parse(args[2]));
+  run(
+    args[0],
+    int.parse(args[1]),
+    args[2],
+    int.parse(args[3]),
+    int.parse(args[4]),
+    int.parse(args[5]),
+    int.parse(args[6]),
+  );
 
   // final a = ListToCsvConverter().convert([
   //   ['aaaa', 'bbbb', 'cccc', 1],
