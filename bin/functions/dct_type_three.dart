@@ -4,7 +4,7 @@ import 'package:scidart/numdart.dart';
 
 Future<Array2d> dctTypeThree(int dctFilterNum, int filterLen) async {
   List<Array> basic = [];
-  basic.add(Array(List.filled(10, (1 / sqrt(filterLen)))));
+  basic.add(Array(List.filled(filterLen, (1 / sqrt(filterLen)))));
 
   Array samples = arrayMultiplyToScalar(
     // FIXME Não gera o elemento final como a função do numpy, implementar a propria função. Por enquanto está na gambiarra

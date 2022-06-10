@@ -1,7 +1,6 @@
 import 'dart:typed_data';
-
+import 'package:fftea/stft.dart' as util;
 import 'package:fftea/fftea.dart';
-
 import 'functions/framing.dart';
 import 'functions/audio_log.dart';
 import 'functions/hann_window.dart';
@@ -71,6 +70,7 @@ Future<List<double>> mfcc(
 
   // Array windowHann = hann(fftSize);
   Array windowHann = hannWindow(fftSize);
+  // Array windowHann = Array(util.Window.hanning(fftSize).toList());
 
   List<Array> audioWin =
       Array2d(audioFramed).map((element) => element * windowHann).toList();
@@ -94,30 +94,30 @@ Future<List<double>> mfcc(
 
   List<ArrayComplex> audioFft = [];
 
-  // for (var i = 0; i < size; i++) {
-  //   List<Float64x2> aux =
-  //       audioWin.elementAt(i).map((element) => Float64x2(element, 0)).toList();
-
-  //   FFT(fftSize).inPlaceFft(
-  //     Float64x2List.fromList(aux),
-  //   );
-
-  //   audioFft.add(
-  //     ArrayComplex(aux
-  //         .map((e) => Complex(real: e.x, imaginary: e.y))
-  //         .toList()
-  //         .sublist(0, cut)),
-  //   );
-  // }
-
   for (var i = 0; i < size; i++) {
-    List<Complex> aux =
-        audioWin.elementAt(i).map((element) => Complex(real: element)).toList();
+    Float64x2List aux = Float64x2List.fromList(
+        audioWin.elementAt(i).map((element) => Float64x2(element, 0)).toList());
+
+    FFT(fftSize).inPlaceFft(
+      aux,
+    );
 
     audioFft.add(
-      ArrayComplex(fft(ArrayComplex(aux)).sublist(0, cut)),
+      ArrayComplex(aux
+          .map((e) => Complex(real: e.x, imaginary: e.y))
+          .toList()
+          .sublist(0, cut)),
     );
   }
+
+  // for (var i = 0; i < size; i++) {
+  //   List<Complex> aux =
+  //       audioWin.elementAt(i).map((element) => Complex(real: element)).toList();
+
+  //   audioFft.add(
+  //     ArrayComplex(fft(ArrayComplex(aux)).sublist(0, cut)),
+  //   );
+  // }
 
   // TODO Teste da necessidade de transpor a matriz
   // audio_fft = matrixComplexTranspose(audio_fft);

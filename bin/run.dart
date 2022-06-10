@@ -88,14 +88,28 @@ void main(List<String> args) async {
   // a.add('550');
 
   // run(a[0], a[1], int.parse(a[2]));
+  // run(
+  //   args[0],
+  //   int.parse(args[1]),
+  //   args[2],
+  //   int.parse(args[3]),
+  //   int.parse(args[4]),
+  //   int.parse(args[5]),
+  //   int.parse(args[6]),
+  // );
+
   run(
-    args[0],
-    int.parse(args[1]),
-    args[2],
-    int.parse(args[3]),
-    int.parse(args[4]),
-    int.parse(args[5]),
-    int.parse(args[6]),
+    // "/home/adriano/Downloads/original/bee_5s",
+    // "/home/adriano/Downloads/original/6",
+    // "/home/adriano/Downloads/original/7",
+    // "/home/adriano/Downloads/original/10",
+    "/home/adriano/Downloads/original/bee_15s",
+    1,
+    "bee",
+    512,
+    20,
+    2048,
+    48,
   );
 
   // final a = ListToCsvConverter().convert([
