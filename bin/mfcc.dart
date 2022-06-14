@@ -68,8 +68,8 @@ Future<List<double>> mfcc(
   //   ),
   // );
 
-  // Array windowHann = hann(fftSize);
-  Array windowHann = hannWindow(fftSize);
+  Array windowHann = hann(fftSize);
+  // Array windowHann = hannWindow(fftSize);
   // Array windowHann = Array(util.Window.hanning(fftSize).toList());
 
   List<Array> audioWin =
@@ -96,17 +96,20 @@ Future<List<double>> mfcc(
 
   for (var i = 0; i < size; i++) {
     Float64x2List aux = Float64x2List.fromList(
-        audioWin.elementAt(i).map((element) => Float64x2(element, 0)).toList());
+      audioWin.elementAt(i).map((element) => Float64x2(element, 0)).toList(),
+    );
 
     FFT(fftSize).inPlaceFft(
       aux,
     );
 
     audioFft.add(
-      ArrayComplex(aux
-          .map((e) => Complex(real: e.x, imaginary: e.y))
-          .toList()
-          .sublist(0, cut)),
+      ArrayComplex(
+        aux
+            .map((e) => Complex(real: e.x, imaginary: e.y))
+            .toList()
+            .sublist(0, cut),
+      ),
     );
   }
 
