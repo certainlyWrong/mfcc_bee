@@ -1,49 +1,39 @@
-A server app built using [Shelf](https://pub.dev/packages/shelf),
-configured to enable running with [Docker](https://www.docker.com/).
+<!-- 
+This README describes the package. If you publish this package to pub.dev,
+this README's contents appear on the landing page for your package.
 
-This sample code handles HTTP GET requests to `/` and `/echo/<message>`
+For information about how to write a good package README, see the guide for
+[writing package pages](https://dart.dev/guides/libraries/writing-package-pages). 
 
-# Running the sample
+For general information about developing packages, see the Dart guide for
+[creating packages](https://dart.dev/guides/libraries/create-library-packages)
+and the Flutter guide for
+[developing packages and plugins](https://flutter.dev/developing-packages). 
+-->
 
-## Running with the Dart SDK
+TODO: Put a short description of the package here that helps potential users
+know whether this package might be useful for them.
 
-You can run the example with the [Dart SDK](https://dart.dev/get-dart)
-like this:
+## Features
 
-```
-$ dart run bin/server.dart
-Server listening on port 8080
-```
+TODO: List what your package can do. Maybe include images, gifs, or videos.
 
-And then from a second terminal:
-```
-$ curl http://0.0.0.0:8080
-Hello, World!
-$ curl http://0.0.0.0:8080/echo/I_love_Dart
-I_love_Dart
-```
+## Getting started
 
-## Running with Docker
+TODO: List prerequisites and provide or point to information on how to
+start using the package.
 
-If you have [Docker Desktop](https://www.docker.com/get-started) installed, you
-can build and run with the `docker` command:
+## Usage
 
-```
-$ docker build . -t myserver
-$ docker run -it -p 8080:8080 myserver
-Server listening on port 8080
+TODO: Include short and useful examples for package users. Add longer examples
+to `/example` folder. 
+
+```dart
+const like = 'sample';
 ```
 
-And then from a second terminal:
-```
-$ curl http://0.0.0.0:8080
-Hello, World!
-$ curl http://0.0.0.0:8080/echo/I_love_Dart
-I_love_Dart
-```
+## Additional information
 
-You should see the logging printed in the first terminal:
-```
-2021-05-06T15:47:04.620417  0:00:00.000158 GET     [200] /
-2021-05-06T15:47:08.392928  0:00:00.001216 GET     [200] /echo/I_love_Dart
-```
+TODO: Tell users more about the package: where to find more information, how to 
+contribute to the package, how to file issues, what response they can expect 
+from the package authors, and more.

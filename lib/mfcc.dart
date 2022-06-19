@@ -1,15 +1,15 @@
 import 'dart:typed_data';
-import 'package:fftea/stft.dart' as util;
-import 'package:fftea/fftea.dart';
 import 'functions/framing.dart';
+import 'package:fftea/fftea.dart';
 import 'functions/audio_log.dart';
-import 'functions/hann_window.dart';
 import 'functions/normalize.dart';
 import 'functions/filterbank.dart';
-import 'functions/dct_type_three.dart';
 import 'package:scidart/numdart.dart';
 import 'package:scidart/scidart.dart';
+import 'functions/dct_type_three.dart';
+// import 'functions/hann_window.dart';
 import 'functions/utils/buffer_wav.dart';
+// import 'package:fftea/stft.dart' as util;
 
 Future<List<double>> mfcc(
   BufferWav buffer, {
@@ -163,10 +163,10 @@ Future<List<double>> mfcc(
       dctFilters = await dctTypeThree(dctFilterNum, melFilterNum),
       cepstralCoefficents = matrixDot(dctFilters, resultAudioLog);
 
-  List<double> MFCCs = [];
+  List<double> coeffs = [];
 
   for (var i = 0; i < cepstralCoefficents.row; i++) {
-    MFCCs.add(cepstralCoefficents[i][0]);
+    coeffs.add(cepstralCoefficents[i][0]);
   }
 
   if (verbose) {
@@ -174,5 +174,5 @@ Future<List<double>> mfcc(
     print("finish - ${time?.elapsedMilliseconds}ms");
   }
 
-  return MFCCs;
+  return coeffs;
 }

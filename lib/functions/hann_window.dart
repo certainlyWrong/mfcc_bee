@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:scidart/numdart.dart';
 
 Array hannWindow(int fftSize) {

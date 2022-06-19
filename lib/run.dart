@@ -27,7 +27,7 @@ void run(
       .toList();
 
   for (var i = 0; i < quant; i++) {
-    print("$i - " + pathFromFileName(allPaths[i].toString()));
+    print("$i - ${pathFromFileName(allPaths[i].toString())}");
     await loadBuffer(allPaths[i].path).then((value) async {
       if (value != null) {
         mfccResults.add([
@@ -45,7 +45,7 @@ void run(
     });
   }
 
-  File("./" + fileName + ".csv")
+  File("./$fileName.csv")
     ..createSync()
     ..openWrite()
     ..writeAsStringSync(ListToCsvConverter().convert(mfccResults))
