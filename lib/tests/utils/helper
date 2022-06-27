@@ -1,4 +1,15 @@
 
 args:
-    --create-test: gera um novo teste para ser adicionado na fila.
-    
+    [execute]: Inicia a execução dos testes ainda não processados.
+
+    -c || --create: Gera um novo teste para ser adicionado a fila de processamento.
+        version : ( int ) Número da sua escolha que indicará a versão do teste.
+        quant : ( int ) Quantidade de amostras carregadas por pasta.
+        hopSize : ( int ) 
+        dctFilterNum : ( int ) Quantidade de coeficientes que serão extraidos de cada áudio.
+        fftSize : ( int ) Tamanho do janelamento (Geralmente power of 2).
+        melFilterNum : ( int ) Número de filtros da escala mel.
+        fftVersion : ( int ) Execute com a versão 1 ou 2. A versão 2 é a mais rápida.
+        hannVersion : ( int ) Execute com a versão 1, 2 ou 3. A versão 1 é a padrão.
+        beePath : ( str ) Path dos áudios que contém rainha.
+        noBeePath : ( str ) Path dos áudios que não contém rainha.

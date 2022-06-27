@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:convert';
 
-void createTest(String pathTests) {
+void createTest(String pathTests) async {
   Directory tests = Directory(pathTests);
 
   if (!tests.existsSync()) {
@@ -23,29 +23,38 @@ void createTest(String pathTests) {
 
   Map<String, dynamic> jsonAux = {};
 
-  print(!tests.existsSync());
   if (!tests.existsSync()) {
     tests.create();
   }
 
   print("::::New test::::");
   for (var i = 0; i < args.length; i++) {
-    print('$i - ${args[i]}: ');
-    if (i < 7) {
-      int aux = 0;
-      while (aux != 0) {
-        try {
-          aux = int.parse(stdin.readLineSync() ?? '0');
-        } catch (e) {
-          print("Error: not number!");
-        }
-      }
-      jsonAux.addAll({args[i]: aux});
+    stdout.write('||| ${args[i]}: ');
+    if (i < 8) {
+      jsonAux.addAll(
+        {
+          args[i]: int.parse(
+              stdin.readLineSync(encoding: utf8, retainNewlines: false) ?? '0')
+        },
+      );
     } else {
-      jsonAux.addAll({args[i]: stdin.readLineSync()});
+      jsonAux.addAll(
+        {args[i]: stdin.readLineSync(encoding: utf8, retainNewlines: false)},
+      );
     }
   }
-  File("$pathTests/${jsonAux['version']}.json")
+
+  jsonAux.addAll(
+    {
+      "name": "bee_${DateTime.now().toIso8601String()}",
+      "time_run": null,
+      "time_total_run": null,
+      "date": DateTime.now().toIso8601String(),
+      "date_run": null,
+    },
+  );
+
+  File("$pathTests/${jsonAux['name']}.json")
     ..createSync()
-    ..writeAsStringSync("aaaaaaaaa");
+    ..writeAsStringSync(jsonEncode(jsonAux));
 }

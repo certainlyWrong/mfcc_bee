@@ -1,12 +1,14 @@
 import 'dart:io';
+import 'dart:isolate';
 import 'package:csv/csv.dart';
 import 'package:mfcc_bee/mfcc/mfcc.dart';
-import 'package:mfcc_bee/tests/model/test_model.dart';
+import 'package:mfcc_bee/tests/models/test_model.dart';
 import 'package:mfcc_bee/mfcc/functions/load_wav_buffer.dart';
 
 class TestLocal extends TestsModel {
   TestLocal(
-      {required super.version,
+      {required super.csvPath,
+      required super.version,
       required super.quant,
       required super.hopSize,
       required super.dctFilterNum,
@@ -14,11 +16,12 @@ class TestLocal extends TestsModel {
       required super.melFilterNum,
       required super.fftVersion,
       required super.hannVersion,
+      required super.name,
       required super.beePath,
       required super.noBeePath});
 
   @override
-  void run() async {
+  void run(SendPort message) async {
     List<FileSystemEntity> beeWavePaths =
             (await Directory(beePath).list(recursive: true).toList())
                 .where((element) => element.path.contains('wav'))
@@ -38,11 +41,10 @@ class TestLocal extends TestsModel {
         mfccBeeResults = [],
         mfccNoBeeResults = [];
 
-    stdout.write(
-        "::::::::Init: ${super.version} - version=${super.fftVersion}::::::::\n");
+    stdout.write("::::::::Init: version = ${super.version}::::::::\n");
 
     for (var i = 0; i < quant; i++) {
-      stdout.write("run: $quant/${i + 1}\r");
+      stdout.write("run version:$version bee: $quant/${i + 1}\n");
       await loadBuffer(beeWavePaths[i].path).then(
         (value) async {
           if (value != null) {
@@ -52,7 +54,7 @@ class TestLocal extends TestsModel {
                 'bee',
                 ...(await mfcc(
                   value,
-                  verbose: true,
+                  verbose: false,
                   hopSize: hopSize,
                   fftSize: fftSize,
                   dctFilterNum: dctFilterNum,
@@ -68,7 +70,8 @@ class TestLocal extends TestsModel {
     }
 
     for (var i = 0; i < quant; i++) {
-      stdout.write("run: $quant/${i + 1}\r");
+      stdout.write("run version:$version no_bee: $quant/${i + 1}\n");
+
       await loadBuffer(noBeeWavePaths[i].path).then(
         (value) async {
           if (value != null) {
@@ -78,7 +81,7 @@ class TestLocal extends TestsModel {
                 'noBee',
                 ...(await mfcc(
                   value,
-                  verbose: true,
+                  verbose: false,
                   hopSize: hopSize,
                   fftSize: fftSize,
                   dctFilterNum: dctFilterNum,
@@ -93,8 +96,7 @@ class TestLocal extends TestsModel {
       );
     }
 
-    File(
-        "./test_hop=${super.hopSize}coeff=${super.dctFilterNum}_melFilter=${fftSize}_fftSize=${fftSize}_FFT_v${fftVersion}_hann_v${hannVersion}_${super.version}.csv")
+    File("${super.csvPath}/${super.name}.csv")
       ..createSync()
       ..openWrite()
       ..writeAsStringSync(ListToCsvConverter().convert([
@@ -104,6 +106,8 @@ class TestLocal extends TestsModel {
       ]))
       ..existsSync();
 
-    stdout.close();
+    // stdout.close();
+    message.send('finish');
+    return;
   }
 }
