@@ -14,12 +14,12 @@ import 'package:fftea/stft.dart' as util;
 Future<List<double>> mfcc(
   BufferWav buffer, {
   int hopSize = 15,
-  int fftSize = 2048,
-  int dctFilterNum = 20,
+  int fftSize = 4096,
+  int dctFilterNum = 40,
   bool verbose = false,
-  int melFilterNum = 10,
+  int melFilterNum = 48,
   bool normilizeActivate = false,
-  int fftVersion = 1,
+  int fftVersion = 2,
   int hannVersion = 1,
 }) async {
   /*

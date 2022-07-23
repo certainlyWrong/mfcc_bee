@@ -43,8 +43,8 @@ void main(List<String> args) async {
           pathTests: pathTests,
         ).run();
       }
-    } else {
-      print("Run 'zumbeedo -h'");
     }
+  } else {
+    print("Run 'zumbeedo -h'");
   }
 }

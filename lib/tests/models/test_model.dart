@@ -1,7 +1,8 @@
 import 'dart:isolate';
 
 abstract class TestsModel {
-  final String beePath, noBeePath, csvPath, name;
+  final String beePath, noBeePath, csvPath, testPath, name;
+  final Map<String, dynamic> executeProcess;
   final int quant,
       hopSize,
       dctFilterNum,
@@ -12,6 +13,8 @@ abstract class TestsModel {
       hannVersion;
 
   TestsModel({
+    required this.testPath,
+    required this.executeProcess,
     required this.csvPath,
     required this.version,
     required this.quant,

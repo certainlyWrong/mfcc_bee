@@ -4,12 +4,11 @@ import 'dart:isolate';
 import 'package:mfcc_bee/tests/tests_type/test_local.dart';
 
 class Execute {
-  List<ReceivePort> processComunicate = [];
-  Map<ReceivePort, Isolate> process = {};
-
-  List<Map<String, dynamic>> executeProcess = [];
-
+  List<Future> awaits = [];
   final String pathCSVs, pathTests;
+  Map<ReceivePort, Isolate> process = {};
+  List<ReceivePort> processComunicate = [];
+  List<Map<String, dynamic>> executeProcess = [];
 
   Execute({
     required this.pathCSVs,
@@ -48,6 +47,8 @@ class Execute {
 
     for (var i = 0; i < executeProcess.length; i++) {
       TestLocal test = TestLocal(
+        testPath: pathTests,
+        executeProcess: executeProcess[i],
         csvPath: pathCSVs,
         version: executeProcess[i]['version']!,
         quant: executeProcess[i]['quant']!,
@@ -67,6 +68,10 @@ class Execute {
       processComunicate.add(receivePort);
       process.addAll(
           {receivePort: (await Isolate.spawn(test.run, receivePort.sendPort))});
+
+      awaits.add(receivePort.first);
     }
+
+    Future.wait(awaits);
   }
 }
