@@ -2,9 +2,9 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:convert';
 import 'package:csv/csv.dart';
-import 'package:mfcc_bee/mfcc/mfcc.dart';
+import 'package:mfcc_bee/mfcc_bee/mfcc.dart';
 import 'package:mfcc_bee/tests/models/test_model.dart';
-import 'package:mfcc_bee/mfcc/functions/load_wav_buffer.dart';
+import 'package:mfcc_bee/mfcc_bee/functions/load_wav_buffer.dart';
 
 class TestLocal extends TestsModel {
   TestLocal(
@@ -41,8 +41,8 @@ class TestLocal extends TestsModel {
             ...List<int>.generate(dctFilterNum, (index) => index)
           ]
         ],
-        mfccBeeResults = [],
-        mfccNoBeeResults = [];
+        mfcc_beeBeeResults = [],
+        mfcc_beeNoBeeResults = [];
 
     stdout.write("::::::::Init: version = ${super.version}::::::::\n");
 
@@ -53,11 +53,11 @@ class TestLocal extends TestsModel {
       await loadBuffer(beeWavePaths[i].path).then(
         (value) async {
           if (value != null) {
-            mfccBeeResults.add(
+            mfcc_beeBeeResults.add(
               [
                 'element$i',
                 'bee',
-                ...(await mfcc(
+                ...(await mfcc_bee(
                   value,
                   verbose: false,
                   hopSize: hopSize,
@@ -80,11 +80,11 @@ class TestLocal extends TestsModel {
       await loadBuffer(noBeeWavePaths[i].path).then(
         (value) async {
           if (value != null) {
-            mfccNoBeeResults.add(
+            mfcc_beeNoBeeResults.add(
               [
                 'element$i',
                 'noBee',
-                ...(await mfcc(
+                ...(await mfcc_bee(
                   value,
                   verbose: false,
                   hopSize: hopSize,
@@ -107,8 +107,8 @@ class TestLocal extends TestsModel {
       ..openWrite()
       ..writeAsStringSync(ListToCsvConverter().convert([
         ...header,
-        ...mfccBeeResults,
-        ...mfccNoBeeResults,
+        ...mfcc_beeBeeResults,
+        ...mfcc_beeNoBeeResults,
       ]))
       ..existsSync();
 

@@ -11,7 +11,7 @@ import 'functions/dct_type_three.dart';
 import 'functions/utils/buffer_wav.dart';
 import 'package:fftea/stft.dart' as util;
 
-Future<List<double>> mfcc(
+Future<List<double>> mfcc_bee(
   BufferWav buffer, {
   int hopSize = 15,
   int fftSize = 4096,
