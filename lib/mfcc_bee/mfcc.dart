@@ -63,6 +63,7 @@ Future<List<double>> mfcc_bee(
   double freqMin = 0, freqHigh = buffer.simplesRate / 2;
 
   // TODO testando se realmente é necessario transpor a matriz duas vezes para ter bons resultados
+  // TODO testing if it is really necessary to transpose the matrix twice to have good results
   // Array2d audio_frame_T = matrixTranspose(
   //   matrixMultiplyColumns(
   //     Array2d(await audio_framed),
@@ -147,6 +148,7 @@ Future<List<double>> mfcc_bee(
   }
 
   // TODO Teste da necessidade de transpor a matriz
+  // TODO Test the need to transpose the matrix
   // audio_fft = matrixComplexTranspose(audio_fft);
 
   List<Array> audioPower = [];

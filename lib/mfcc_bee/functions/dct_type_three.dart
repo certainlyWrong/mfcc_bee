@@ -8,6 +8,7 @@ Future<Array2d> dctTypeThree(int dctFilterNum, int filterLen) async {
 
   Array samples = arrayMultiplyToScalar(
     // FIXME Não gera o elemento final como a função do numpy, implementar a propria função. Por enquanto está na gambiarra
+    // FIXME It doesn't generate the final element like the numpy function, implement the function itself. For now it's in the gambiarra
     createArrayRange(start: 1, stop: (2 * filterLen) + 1, step: 2),
     pi / (2 * filterLen),
   );
